@@ -10,8 +10,10 @@ const chai = require('chai');
 const assert = chai.assert;
 
 const jsdom = require('jsdom');
+//const { isValidInput } = require('../public/sudoku-solver.js');
 const { JSDOM } = jsdom;
 let Solver;
+//const { isValidInput } = require('../public/sudoku-solver.js');
 
 suite('UnitTests', () => {
   suiteSetup(() => {
@@ -27,19 +29,23 @@ suite('UnitTests', () => {
   
   // Only the digits 1-9 are accepted
   // as valid input for the puzzle grid
-  suite('Function ____()', () => {
+  suite('Function isValidInput()', () => {
     test('Valid "1-9" characters', (done) => {
       const input = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-
-      // done();
+      input.forEach((i) =>{
+        assert.isTrue(Solver.isValidInput(i), "isValidInput should be true");
+      });
+      done();
     });
 
     // Invalid characters or numbers are not accepted 
     // as valid input for the puzzle grid
     test('Invalid characters (anything other than "1-9") are not accepted', (done) => {
       const input = ['!', 'a', '/', '+', '-', '0', '10', 0, '.'];
-
-      // done();
+      input.forEach((i) => {
+        assert.isFalse(Solver.isValidInput(i), "isValidInput should be false");
+      });
+      done();
     });
   });
   

@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
 */
 try {
   module.exports = {
-
+    isValidInput: (input) => {
+      const zeroToNine = ['1','2','3','4','5','6','7','8','9'];
+      return zeroToNine.includes(input);
+    }
   }
 } catch (e) {}
