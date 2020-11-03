@@ -49,11 +49,14 @@ suite('UnitTests', () => {
     });
   });
   
-  suite('Function ____()', () => {
+  suite('Function createObjectFromInput()', () => {
     test('Parses a valid puzzle string into an object', done => {
       const input = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
-      
-      // done();
+      let o = Solver.createObjectFromInput(input);
+      console.log("createObjectFromInput",o);
+      assert.isObject(o,"createObjectFromInput should return an object");
+      assert.strictEqual(o["A3"], "9", "A3 should equal 9");
+      done();
     });
     
     // Puzzles that are not 81 numbers/periods long show the message 
