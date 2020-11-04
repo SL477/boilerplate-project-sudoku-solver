@@ -23,8 +23,13 @@ suite('Functional Tests', () => {
     // Entering a valid number in the text area populates 
     // the correct cell in the sudoku grid with that number
     test('Valid number in text area populates correct cell in grid', done => {
-
-      // done();
+      const input = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
+      const textArea = document.getElementById("text-input");
+      textArea.value = input;
+      textArea.dispatchEvent(new Event("change"));
+      const A3 = document.getElementById("A3");
+      assert.equal(A3.value, "9", "A3 should equal 9");
+      done();
     });
 
     // Entering a valid number in the grid automatically updates
