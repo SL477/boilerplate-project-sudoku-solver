@@ -12,11 +12,19 @@ const assert = chai.assert;
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 let Solver;
-
+let dom;
 suite('Functional Tests', () => {
   suiteSetup(() => {
     // DOM already mocked -- load sudoku solver then run tests
     Solver = require('../public/sudoku-solver.js');
+    /*return JSDOM.fromFile('./views/index.html')
+      .then((dom) => {
+        global.window = dom.window;
+        global.document = dom.window.document;
+
+        Solver = require('../public/sudoku-solver.js');
+      });*/
+      //dom = new JSDOM.fromFile('./views/index.html',{runScripts: "dangerously"});
   });
   
   suite('Text area and sudoku grid update automatically', () => {
@@ -26,9 +34,11 @@ suite('Functional Tests', () => {
       const input = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
       const textArea = document.getElementById("text-input");
       textArea.value = input;
-      textArea.dispatchEvent(new Event("change"));
+      Solver.updateTextGrid(input);
+      //dom.window
       const A3 = document.getElementById("A3");
-      assert.equal(A3.value, "9", "A3 should equal 9");
+      
+      assert.equal(A3.value, "9", "A3 should equal 9 '" + A3.value + "' textArea '" + textArea.value + "'");
       done();
     });
 

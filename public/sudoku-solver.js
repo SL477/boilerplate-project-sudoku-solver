@@ -64,6 +64,7 @@ const rows = ['A','B','C','D','E','F','G','H','I'];
 try {
   module.exports = {
     isValidInput: isInputValid,
-    createObjectFromInput: inputCreateObject
+    createObjectFromInput: inputCreateObject,
+    updateTextGrid: textAreaChangeFunction
   }
 } catch (e) {}
