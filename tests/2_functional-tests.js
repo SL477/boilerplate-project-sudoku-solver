@@ -45,8 +45,19 @@ suite('Functional Tests', () => {
     // Entering a valid number in the grid automatically updates
     // the puzzle string in the text area
     test('Valid number in grid updates the puzzle string in the text area', done => {
-
-      // done();
+      const input = '..9..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
+      const textArea = document.getElementById("text-input");
+      const finalInput = '129..5.1.85.4....2432......1...69.83.9.....6.62.71...9......1945....4.37.4.3..6..';
+      textArea.value = input;
+      Solver.updateTextGrid(input);
+      document.getElementById("A1").value = "1";
+      document.getElementById("A2").value = "2"
+      document.getElementById("A4").value = "a";
+      Solver.updateGridCell("A1");
+      Solver.updateGridCell("A2");
+      Solver.updateGridCell("A4");
+      assert.equal(document.getElementById("text-input").value, finalInput, "Cells 1 and 2 should update '" + Solver.updateGridCell("A1") + "'");
+      done();
     });
   });
   
@@ -54,8 +65,10 @@ suite('Functional Tests', () => {
     // Pressing the "Clear" button clears the sudoku 
     // grid and the text area
     test('Function clearInput()', done => {
-
-      // done();
+      Solver.clearInput();
+      const textArea = document.getElementById("text-input");
+      assert.equal(textArea.value, "", "text area should be empty");
+      done();
     });
     
     // Pressing the "Solve" button solves the puzzle and
