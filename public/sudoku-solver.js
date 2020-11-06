@@ -58,6 +58,11 @@ const gridUpdate = (cell) => {
     console.log('index', index);
 
     let txt = textArea.value;
+    console.log("txt", txt);
+    if (!txt) {
+      txt = '.................................................................................';
+    }
+
     let str;
     if (index > 1) {
       str = txt.substring(0,index - 1) + val;
@@ -87,6 +92,112 @@ const clearFnct = () => {
   console.log("clear Called");
 };
 
+const isPuzzleValid = (input) => {
+  if (input.length !== 81) {
+    return false;
+  }
+  for (var i = 0; i < 9; i++) {
+    //Check each row to make sure that there are no duplicate values
+    let row = [];
+    for (var j = 1; j < 10; j++) {
+      let id = ((i * 9) + j) - 1;
+      let cellVal = input[id];
+      if (isInputValid(cellVal)) {
+        //console.log("row", row, 'cellVal', cellVal, 'i',i, 'id',id);
+        if (row.includes(cellVal)) {
+          //console.log("row", row, 'cellVal', cellVal);
+          return false;
+        }
+        else {
+          row.push(cellVal);
+        }
+      }
+    }
+  }
+
+  //Check each column
+  for (var i = 0; i < 9; i++) {
+    let column = [];
+    for (var j = 0; j < 9; j++) {
+      let id = (j * 9) + i;
+      let cellVal = input[id];
+      if (isInputValid(cellVal)) {
+        //console.log("column", column, 'cellVal', cellVal, 'i',i, 'id',id);
+        if (column.includes(cellVal)) {
+          return false;
+        }
+        else {
+          column.push(cellVal);
+        }
+      }
+    }
+  }
+
+  //check each box
+  let boxStarts = [0,3,6,27,30,33,54,57,60];
+  let offset = [0,1,2,9,10,11,18,19,20];
+  for (var i = 0; i < 9; i++) {
+    let box = [];
+    for (var j = 0; j < 9; j++) {
+      let id = boxStarts[i] + offset[j];
+      let cellVal = input[id];
+      if (isInputValid(cellVal)) {
+        //console.log("box", box, 'cellVal', cellVal, 'i',i, 'id',id);
+        if (box.includes(cellVal)) {
+          return false;
+        }
+        else {
+          box.push(cellVal);
+        }
+      }
+    }
+  }
+  return true;
+};
+
+const solveTryer = (input) => {
+  if (!input.includes(".")) {
+    console.log("complete", input);
+    return input;
+  }
+  for (var i = 1; i < 10; i++) {
+    let j = input.indexOf(".");
+    if (j < 0) {
+      return input;
+    }
+    let newInput;
+    if (j == 0) {
+      newInput = i + input.substring(1);
+    }
+    else {
+      newInput = input.substring(0, j) + i;
+      if (j < 81) {
+        newInput = newInput + input.substring(j);
+      }
+    }
+    console.log("incomplete", input);
+    if (isPuzzleValid(newInput)) {
+      solveTryer(newInput);
+    }
+    else {
+      
+      continue;
+    }
+  }
+}
+
+const solveBtn = (input) => {
+  console.log("Solve Btn",input);
+  console.log("isPuzzlevalid", isPuzzleValid(input));
+  if (!isPuzzleValid(input)) {
+    return input;
+  }
+  //Try to solve
+  let newSolution = input;
+  //idea loop through the solution's empty numbers. guess a number if the grid is valid then continue onwards recursively until there are no more to find
+  console.log("s", solveTryer(input));
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // Load a simple puzzle into the text area
   textArea.addEventListener("change",() =>{
@@ -108,6 +219,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //Clear button
   document.getElementById("clear-button").onclick = () => {clearFnct();};
+
+  //Solve button
+  document.getElementById("solve-button").onclick = () => {
+    solveBtn(document.getElementById("text-input").value);
+  };
 });
 
 /* 
@@ -122,6 +238,7 @@ try {
     createObjectFromInput: inputCreateObject,
     updateTextGrid: textAreaChangeFunction,
     updateGridCell: gridUpdate,
-    clearInput: clearFnct
+    clearInput: clearFnct,
+    puzzleIsValid: isPuzzleValid
   }
 } catch (e) {}
