@@ -1,5 +1,6 @@
 const rows = ['A','B','C','D','E','F','G','H','I'];
 
+
 const isInputValid = (input) => {
   const zeroToNine = ['1','2','3','4','5','6','7','8','9'];
   return zeroToNine.includes(input);
@@ -155,7 +156,7 @@ const isPuzzleValid = (input) => {
   return true;
 };
 
-const solveTryer = (input) => {
+/*const solveTryer = (input) => {
   if (!input.includes(".")) {
     console.log("complete", input);
     return input;
@@ -184,7 +185,110 @@ const solveTryer = (input) => {
       continue;
     }
   }
-}
+}*/
+
+const getPossibilitiesForRow = (num, input) => {
+  let ret = ['1','2','3','4','5','6','7','8','9'];
+  for (var i = 0; i < 9; i++) {
+    let number = input[i + (9 * num)];
+    //console.log('number',number)
+    if (isInputValid(number)) {
+      let index = ret.indexOf(number);
+      //console.log('index', index);
+      ret.splice(index,1);
+    }
+  }
+  return ret;
+};
+
+const getPossibilitiesForColumn = (num, input) => {
+  let ret = ['1','2','3','4','5','6','7','8','9'];
+  for (var i = 0; i < 9; i++) {
+    let number = input[num + (9 * i)];
+    //console.log('number',number)
+    if (isInputValid(number)) {
+      let index = ret.indexOf(number);
+      //console.log('index', index);
+      ret.splice(index,1);
+    }
+  }
+  return ret;
+};
+
+const getBoxNumber = (index) => {
+  let boxNums = [0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8,6,6,6,7,7,7,8,8,8];
+  return boxNums[index];
+};
+
+const getPossibilitiesForBox = (num, input) => {
+  let boxStarts = [0,3,6,27,30,33,54,57,60];
+  let offset = [0,1,2,9,10,11,18,19,20];
+  let ret = ['1','2','3','4','5','6','7','8','9'];
+  for (var i = 0; i < 9; i++) {
+    let number = input[boxStarts[num] + offset[i]];
+    //console.log('number',number)
+    if (isInputValid(number)) {
+      let index = ret.indexOf(number);
+      //console.log('index', index);
+      ret.splice(index,1);
+    }
+  }
+  return ret;
+};
+
+const getPossibilitiesForCell = (index, input) => {
+  if (isInputValid(input[index])) {
+    return [];
+  }
+  let columnPoss = getPossibilitiesForColumn(index % 9, input);
+  let rowPoss = getPossibilitiesForRow(Math.floor(index / 9), input);
+  let boxPoss = getPossibilitiesForBox(getBoxNumber(index), input);
+
+  let arr = [columnPoss, rowPoss, boxPoss];
+  return arr.reduce((p,c) => p.filter(e => c.includes(e)));
+};
+
+const isThereCellWithOnePossibility = (input) => {
+  for (var i = 0; i < 81; i++) {
+    if (getPossibilitiesForCell(i, input).length == 1) {
+      return i;
+    }
+  }
+  return -1;
+};
+
+const setNumberInInput = (number, index, input) => {
+  let ret = '';
+  if (index > 0) {
+    ret += input.substring(0, index);
+  }
+  ret += number;
+  if (index < 80) {
+    ret += input.substring(index + 1);
+  }
+  return ret;
+};
+
+const sortOnePossibilitiesInCell = (input) => {
+  let ret = input;
+  let indexOfCellWithOnePossibility = isThereCellWithOnePossibility(ret);
+  while (indexOfCellWithOnePossibility > -1) {
+    let num = getPossibilitiesForCell(indexOfCellWithOnePossibility, ret);
+    ret = setNumberInInput(num[0], indexOfCellWithOnePossibility, ret);
+    indexOfCellWithOnePossibility = isThereCellWithOnePossibility(ret);
+    console.log('new puzzle', ret);
+  }
+  return ret;
+};
+
+const getNextUnsolvedCell = (input) => {
+  for (var i = 0; i < 81; i++) {
+    if (!isInputValid(input[i])) {
+      return i;
+    }
+  }
+  return -1;
+};
 
 const solveBtn = (input) => {
   console.log("Solve Btn",input);
@@ -195,7 +299,24 @@ const solveBtn = (input) => {
   //Try to solve
   let newSolution = input;
   //idea loop through the solution's empty numbers. guess a number if the grid is valid then continue onwards recursively until there are no more to find
-  console.log("s", solveTryer(input));
+  //console.log("s", solveTryer(input));
+
+  /*for (var i = 0; i < 9; i++) {
+    //console.log('row ' + i, getPossibilitiesForRow(i, newSolution));
+    console.log('column ' + i, getPossibilitiesForBox(i, newSolution));
+  }*/
+  /*for (var i = 0; i < 81; i++) {
+    console.log(i, getPossibilitiesForCell(i, newSolution));
+  }*/
+
+  newSolution = sortOnePossibilitiesInCell(newSolution);
+  if (getNextUnsolvedCell(newSolution) == -1) {
+    textArea.value = newSolution;
+    textAreaChangeFunction(newSolution);
+    return newSolution;
+  }
+  //possible more advanced way of going from 1-9 to locate places where it only appears once
+  return input;
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -239,6 +360,7 @@ try {
     updateTextGrid: textAreaChangeFunction,
     updateGridCell: gridUpdate,
     clearInput: clearFnct,
-    puzzleIsValid: isPuzzleValid
+    puzzleIsValid: isPuzzleValid,
+    solveFnct: solveBtn
   }
 } catch (e) {}
